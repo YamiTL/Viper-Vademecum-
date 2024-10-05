@@ -12,30 +12,27 @@ def update_quality(items: Iterable[Item]):
     # How many types of items do we have? Can we find some sort of groups that allow for breaking down this one function into 2 or 3?
     # Also consider applying this principle of getting the exception/odd one out of the way first in the if loop, and then moving on to the broader cases.
     for item in items:
-        if (
-            item.name != "Aged Brie"
-            and item.name != "Backstage passes to a TAFKAL80ETC concert"
-        ):
+        if item.name != AGED_BRIE and item.name != BACKSTAGE:
             if item.quality > 0:
-                if item.name != "Sulfuras, Hand of Ragnaros":
+                if item.name != SULFURAS:
                     item.quality = item.quality - 1
         else:
             if item.quality < 50:
                 item.quality = item.quality + 1
-                if item.name == "Backstage passes to a TAFKAL80ETC concert":
+                if item.name == BACKSTAGE:
                     if item.sell_in < 11:
                         if item.quality < 50:
                             item.quality = item.quality + 1
                     if item.sell_in < 6:
                         if item.quality < 50:
                             item.quality = item.quality + 1
-        if item.name != "Sulfuras, Hand of Ragnaros":
+        if item.name != SULFURAS:
             item.sell_in = item.sell_in - 1
         if item.sell_in < 0:
-            if item.name != "Aged Brie":
-                if item.name != "Backstage passes to a TAFKAL80ETC concert":
+            if item.name != AGED_BRIE:
+                if item.name != BACKSTAGE:
                     if item.quality > 0:
-                        if item.name != "Sulfuras, Hand of Ragnaros":
+                        if item.name != SULFURAS:
                             item.quality = item.quality - 1
                 else:
                     item.quality = item.quality - item.quality
