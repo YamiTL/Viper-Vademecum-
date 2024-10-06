@@ -12,7 +12,7 @@ def test_aged_brie_increases_quality_neg1():
 
 
 def test_aged_brie_increases_quality_49():
-    item = Item(AGED_BRIE, 49, 49)
+    item = Item(AGED_BRIE, 48, 48)
     update_quality([item])
     assert 50 == item.quality
 
