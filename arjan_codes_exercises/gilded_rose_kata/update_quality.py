@@ -6,7 +6,7 @@ SULFURAS = "Sulfuras, Hand of Ragnaros"
 BACKSTAGE = "Backstage passes to a TAFKAL80ETC concert"
 
 
-# Now I will create 1 function that execute/ collect all relevant
+# Now I will create 1 function to execute/ collect all relevant
 # quality increase and sellin changes for the Brie
 def executes_quality_and_sellin_changes_aged_brie(item: Item):
     if item.quality < 50:
@@ -67,9 +67,13 @@ def update_quality(items: Iterable[Item]):
             executes_quality_and_sellin_changes_backstage(item)
             continue
 
-        elif item.name == "Common item":
-            executes_quality_and_sellin_changes_common_items(item)
-            continue
-
-        elif item.name == "Conjured item":
+        elif "Conjured" in item.name:
             executes_quality_and_sellin_changes_conjured(item)
+
+        else:
+            executes_quality_and_sellin_changes_common_items(item)
+
+
+item1 = Item("Pollito", 3, 6)
+update_quality([item1])
+print(item1)
