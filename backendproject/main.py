@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+from os import path
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from database_queries import write_db
+from database_queries import get_pedido_by_id
 
 app = FastAPI()
 
@@ -44,6 +47,7 @@ item_1 = Item.model_validate(
 cart_item = CartItem.model_validate(
     {"item": item_1, "quantity": 1, "category": "alimento"}
 )
+
 mi_pedido = {
     "pedido_id": "1",
     "customer_id": "miti 1",
@@ -56,13 +60,22 @@ mi_pedido = {
 mi_pedido_validado = Pedido.model_validate(mi_pedido)
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+@app.get(path="/pedidos_backend/{pedido_id}")
+async def received_root(pedido_id: str):
+    pedido_recibido = get_pedido_by_id(pedido_id)
+    if pedido_recibido is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Tu pedido no existe en nuestros registros. Verifica el numero.",
+        )
+    return pedido_recibido
 
 
 # Necesito hacer una nueva funcion en mi programa que acepte un body
-@app.post("/items/")
+@app.post("/pedidos_backend/")
 async def posted_root(mi_pedido: Pedido):
-    print(mi_pedido)
+    pedido_guardado = write_db(mi_pedido.model_dump())
     return mi_pedido
+
+
+# write_db(mi_pedido_validado.model_dump())
