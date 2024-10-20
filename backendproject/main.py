@@ -1,8 +1,17 @@
-from os import path
+from typing import Literal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from database_queries import write_db
+from database_queries import update_db, write_db
 from database_queries import get_pedido_by_id
+
+# Possible states for Orders
+StatusTypes = (
+    Literal["Created"]
+    | Literal["Confirmed"]
+    | Literal["ReadyForCustomer"]
+    | Literal["PickedUp"]
+    | Literal["Closed"]
+)
 
 app = FastAPI()
 
@@ -26,6 +35,7 @@ class CartItem(BaseModel):
 # Refleja el pedido cuando el cliente hace checkout del carrito
 class Pedido(BaseModel):
     pedido_id: str
+    pedido_status: StatusTypes
     customer_id: str
     user_name: str
     user_address: str
@@ -34,32 +44,7 @@ class Pedido(BaseModel):
     payment: list[str]
 
 
-item_1 = Item.model_validate(
-    {
-        "item_sku": "AR322F",
-        "item_name": "pollito",
-        "item_price": 3746,
-        "item_description": "Mi mimi mi MI",
-        "vegan": False,
-    }
-)
-
-cart_item = CartItem.model_validate(
-    {"item": item_1, "quantity": 1, "category": "alimento"}
-)
-
-mi_pedido = {
-    "pedido_id": "1",
-    "customer_id": "miti 1",
-    "user_name": "Woolfie",
-    "user_address": "General Urquiza",
-    "items": [cart_item],
-    # "items": [(1, item_1)],
-    "payment": ["mlem"],
-}
-mi_pedido_validado = Pedido.model_validate(mi_pedido)
-
-
+# Hay que cargar pedidos en la base que tengan sus estados
 @app.get(path="/pedidos_backend/{pedido_id}")
 async def received_root(pedido_id: str):
     pedido_recibido = get_pedido_by_id(pedido_id)
@@ -78,4 +63,6 @@ async def posted_root(mi_pedido: Pedido):
     return mi_pedido
 
 
-# write_db(mi_pedido_validado.model_dump())
+@app.put("/pedidos_backend/")
+async def updated_root(pedido_status: StatusTypes):
+    return update_db({})
