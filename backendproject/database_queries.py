@@ -2,7 +2,7 @@ from typing import Literal
 from pymongo import MongoClient
 from bson import json_util
 import json
-
+from models import StatusTypes
 # from main import Pedido
 
 URI = "mongodb+srv://forosypaginas:cySVsfpMe2glBbWC@cluster0.g6tqipp.mongodb.net/"
@@ -10,6 +10,7 @@ client = MongoClient(URI)
 
 # Como puedo hacer que get_pedido_by_id acepte pedido_id dinamicos
 # Y devuelva el pedido
+
 
 def connect_to_collection(client: MongoClient):
     db_pedidos = client.get_database("pedidos_backend")
@@ -30,7 +31,7 @@ def get_pedido_by_id(id_del_pedido: str):
 
 
 def write_db(query: dict):
-    try: 
+    try:
         coleccion_pedidos = connect_to_collection(client)
         # Query inserting an element that has the name 'Mi'
         pedido = coleccion_pedidos.insert_one(query)
@@ -38,12 +39,10 @@ def write_db(query: dict):
         raise Exception("Unable to find the document due to the following error: ", e)
 
 
-def update_db(pedido_actualizado: dict) -> Literal["Okay"]:
-    print(pedido_actualizado)
+def update_db(updated_id: str, updated_status: StatusTypes) -> Literal["Okay"]:
+    coleccion_pedidos = connect_to_collection(client)
+    query_filter = {"pedido_id": updated_id}
+    update_operation = {"$set": {"pedido_status": updated_status}}
+    result = coleccion_pedidos.update_one(query_filter, update_operation)
+    print(result)
     return "Okay"
-
-
-db.collection.updateOne(
-   { pedido_id: "123" },
-   { $set: {customer_id: "miti 2", user_name: "Sali", items: {item_sku: "AR123"}} },
-)
