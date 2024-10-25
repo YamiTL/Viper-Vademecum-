@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel
 from typing import Literal
 
@@ -15,9 +16,9 @@ StatusTypes = (
 class Item(BaseModel):
     item_sku: str
     item_name: str
-    item_price: int
+    item_price: int  # Este es el precio de venta final/al cliente
     item_description: str
-    vegan: bool
+    item_tags: list[str]
 
 
 # Refleja cada linea/item del carrito
@@ -30,6 +31,7 @@ class CartItem(BaseModel):
 # Refleja el pedido cuando el cliente hace checkout del carrito
 class Pedido(BaseModel):
     pedido_id: str
+    creation_date: datetime.datetime
     pedido_status: StatusTypes
     customer_id: str
     user_name: str
@@ -37,3 +39,18 @@ class Pedido(BaseModel):
     items: list[CartItem]
     # items: list[tuple[int, Item]]
     payment: list[str]
+
+
+class CatalogItem(BaseModel):
+    item_sku: str
+    item_image: str
+    item_name: str
+    item_category: list[str]
+    item_description: str
+    # Tags para conocer si los items son veggie, vegan, sin TACC, organicos, etc
+    item_tags: list[str]
+
+
+# class StockItem(BaseModel):
+#     item_sku: str
+#     item_amount: int
