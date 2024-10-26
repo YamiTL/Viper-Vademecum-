@@ -51,6 +51,6 @@ class CatalogItem(BaseModel):
     item_tags: list[str]
 
 
-# class StockItem(BaseModel):
-#     item_sku: str
-#     item_amount: int
+class StockItem(BaseModel):
+    item_sku: str
+    item_amount: int

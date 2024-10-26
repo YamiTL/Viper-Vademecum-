@@ -1,3 +1,4 @@
+from ast import Dict
 from typing import Literal
 from pymongo import MongoClient
 from bson import json_util
@@ -12,37 +13,62 @@ client = MongoClient(URI)
 # Y devuelva el pedido
 
 
-def connect_to_collection(client: MongoClient):
+def connect_to_pedidos_collection(client: MongoClient):
     db_pedidos = client.get_database("pedidos_backend")
     coleccion_pedidos = db_pedidos["pedidos"]
     return coleccion_pedidos
 
 
 def get_pedido_by_id(id_del_pedido: str):
-    coleccion_pedidos = connect_to_collection(client)
+    coleccion_pedidos = connect_to_pedidos_collection(client)
     pedido_from_db: dict[str, str] | None = coleccion_pedidos.find_one(
         {"pedido_id": id_del_pedido}
     )  # type: ignore
     print(pedido_from_db)
-    pedido_db_json: dict | None = json.loads(json_util.dumps(pedido_from_db))
+    # .loads and .dumps below serializes a Mongodb object coming from ddbb to a Fastapi-compatible json
+    pedido_db_json: dict | None = json.loads(json_util.dumps(pedido_from_db))  #
     return pedido_db_json
-
-    # pedido_from_db = pedidos_from_db.insert_one(query)
 
 
 def write_db(query: dict):
     try:
-        coleccion_pedidos = connect_to_collection(client)
+        order_collection = connect_to_pedidos_collection(client)
         # Query inserting an element that has the name 'Mi'
-        pedido = coleccion_pedidos.insert_one(query)
+        pedido = order_collection.insert_one(query)
     except Exception as e:
         raise Exception("Unable to find the document due to the following error: ", e)
 
 
 def update_db(updated_id: str, updated_status: StatusTypes) -> Literal["Okay"]:
-    coleccion_pedidos = connect_to_collection(client)
+    coleccion_pedidos = connect_to_pedidos_collection(client)
     query_filter = {"pedido_id": updated_id}
     update_operation = {"$set": {"pedido_status": updated_status}}
     result = coleccion_pedidos.update_one(query_filter, update_operation)
     print(result)
     return "Okay"
+
+
+# -----------------------------------------------------------------------------------------------
+
+
+def connect_to_catalog_collection(client: MongoClient):
+    db_catalog = client.get_database("pedidos_backend")
+    catalog_collection = db_catalog["catalog"]
+    return catalog_collection
+
+
+def receive_catalog_by_sku(catalog_item_sku: str):
+    catalog_collection = connect_to_catalog_collection(client)
+    catalog_item: dict[str, str] | None = catalog_collection.find_one(
+        {"item_sku": catalog_item_sku}
+    )
+    catalog_db_json: dict | None = json.loads(json_util.dumps(catalog_item))  #
+    return catalog_db_json
+
+
+def write_catalog(catalog_query: dict):
+    try:
+        catalog_collection = connect_to_catalog_collection(client)
+        catalog_add = catalog_collection.insert_one(catalog_query)
+    except Exception as e:
+        raise Exception("Unable to write on ddbb: ", e)
