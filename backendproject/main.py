@@ -46,8 +46,13 @@ async def received_catalog(item_sku: str):
 
 
 # Funcion para agregar un Catalog item a mi ddbb
-@app.post("/pedidos_backend/")
+@app.post("/pedidos_backend/catalog")
 async def posted_catalog(catalog_item: CatalogItem):
+    if catalog_item.item_sku is None:
+        raise HTTPException(
+            status_code=422,
+            detail="El SKU es obligatorio para la creación de un item en catálogo.",
+        )
     post_catalog = write_catalog(catalog_item.model_dump())
     # Every time I need to add a Python dictionary to Pymongo,
     # I need to convert the Pydantic object into a Pymongo object. Thus, model_dump.

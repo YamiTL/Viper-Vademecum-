@@ -1,6 +1,6 @@
 import datetime
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, Optional
 
 # Possible states for Orders
 StatusTypes = (
@@ -42,7 +42,13 @@ class Pedido(BaseModel):
 
 
 class CatalogItem(BaseModel):
-    item_sku: str
+    """
+    #sku id only compulsory when we create a new item, not
+    when we put/ update one. So to allow for easier and more
+    customer-flexible edition, item_sku needs to be optional.
+    """
+
+    item_sku: Optional[str]
     item_image: str
     item_name: str
     item_category: list[str]
