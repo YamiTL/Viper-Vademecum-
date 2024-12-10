@@ -9,13 +9,13 @@ app = FastAPI()
 # Funcion para obtener pedidos de mi ddbb
 @app.get(path="/pedidos_backend/order/{pedido_id}")
 async def received_order(pedido_id: str):
-    pedido_recibido = get_pedido_by_id(pedido_id)
-    if pedido_recibido is None:
+    received_order = get_pedido_by_id(pedido_id)
+    if received_order is None:
         raise HTTPException(
             status_code=404,
             detail="Tu pedido no existe en nuestros registros. Verifica el numero.",
         )
-    return pedido_recibido
+    return received_order
 
 
 # Funcion para cargar pedidos en mi ddbb
@@ -60,3 +60,11 @@ async def posted_catalog(catalog_item: CatalogItem):
 
 
 # Funcion para editar un Catalog item a mi ddbb
+@app.put("/pedidos_backend/catalog")
+async def updated_catalog(catalog_item: CatalogItem) -> CatalogItem:
+    if catalog_item.item_sku is not None:
+        raise HTTPException(
+            status_code=422,
+            detail="Los SKU de los productos de catalogo no son modificables. Para ingresar un nuevo SKU, crea un nuevo item en Catalogo.",
+        )
+    return catalog_item

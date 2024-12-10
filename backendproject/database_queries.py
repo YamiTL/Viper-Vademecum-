@@ -9,10 +9,8 @@ from models import StatusTypes
 URI = "mongodb+srv://forosypaginas:cySVsfpMe2glBbWC@cluster0.g6tqipp.mongodb.net/"
 client = MongoClient(URI)
 
-# Como puedo hacer que get_pedido_by_id acepte pedido_id dinamicos
-# Y devuelva el pedido
 
-
+# Orders
 def connect_to_pedidos_collection(client: MongoClient):
     db_pedidos = client.get_database("pedidos_backend")
     coleccion_pedidos = db_pedidos["pedidos"]
@@ -51,6 +49,7 @@ def update_db(updated_id: str, updated_status: StatusTypes) -> Literal["Okay"]:
 # -----------------------------------------------------------------------------------------------
 
 
+# Catalog
 def connect_to_catalog_collection(client: MongoClient):
     db_catalog = client.get_database("pedidos_backend")
     catalog_collection = db_catalog["catalog"]
@@ -72,3 +71,7 @@ def write_catalog(catalog_query: dict):
         catalog_add = catalog_collection.insert_one(catalog_query)
     except Exception as e:
         raise Exception("Unable to write on ddbb: ", e)
+
+
+def update_catalog():
+    pass
