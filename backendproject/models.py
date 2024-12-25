@@ -45,7 +45,7 @@ class CatalogItem(BaseModel):
     """
     #sku id only compulsory when we create a new item, not
     when we put/ update one. So to allow for easier and more
-    customer-flexible edition, item_sku needs to be optional.
+    customer-flexible edition, item_sku needs to be immutable.
     """
 
     item_sku: Optional[str]
