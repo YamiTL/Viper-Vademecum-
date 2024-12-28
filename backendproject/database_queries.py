@@ -3,7 +3,7 @@ from typing import Literal
 from pymongo import MongoClient
 from bson import json_util
 import json
-from models import StatusTypes
+from models import CatalogItem, StatusTypes
 # from main import Pedido
 
 URI = "mongodb+srv://forosypaginas:cySVsfpMe2glBbWC@cluster0.g6tqipp.mongodb.net/"
@@ -31,7 +31,6 @@ def get_pedido_by_id(id_del_pedido: str):
 def write_db(query: dict):
     try:
         order_collection = connect_to_pedidos_collection(client)
-        # Query inserting an element that has the name 'Mi'
         pedido = order_collection.insert_one(query)
     except Exception as e:
         raise Exception("Unable to find the document due to the following error: ", e)
@@ -73,5 +72,11 @@ def write_catalog(catalog_query: dict):
         raise Exception("Unable to write on ddbb: ", e)
 
 
-def update_catalog():
-    pass
+def update_catalog(updated_catalog_item: CatalogItem) -> None:
+    # We defined that we only need an updated catalog item and not an item sku because
+    # we can simplify all requirements from this function into just 1 parameter, the Catalog Item
+    catalog_connection = connect_to_catalog_collection(client)
+    query_filter = {"item_sku": updated_catalog_item.item_sku}
+    update_operation = {"$set": {"CatalogItem": updated_catalog_item}}
+    result = catalog_connection.update_one(query_filter, update_operation)
+    print(result)

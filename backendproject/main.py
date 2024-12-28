@@ -1,7 +1,14 @@
+from turtle import update
 from fastapi import FastAPI, HTTPException
-from database_queries import update_db, write_db, write_catalog, receive_catalog_by_sku
+from database_queries import (
+    update_catalog,
+    update_db,
+    write_db,
+    write_catalog,
+    receive_catalog_by_sku,
+)
 from database_queries import get_pedido_by_id
-from models import CatalogItem, Pedido, StatusTypes, CatalogItem
+from models import CatalogItem, Pedido, StatusTypes
 
 app = FastAPI()
 
@@ -60,6 +67,7 @@ async def posted_catalog(catalog_item: CatalogItem):
 
 
 # Funcion para editar un Catalog item a mi ddbb
+# TODO: arreglar que no tenes el sku para acualizar el pedido
 @app.put("/pedidos_backend/catalog")
 async def updated_catalog(catalog_item: CatalogItem) -> CatalogItem:
     if catalog_item.item_sku is not None:
@@ -67,4 +75,5 @@ async def updated_catalog(catalog_item: CatalogItem) -> CatalogItem:
             status_code=422,
             detail="Los SKU de los productos de catalogo no son modificables. Para ingresar un nuevo SKU, crea un nuevo item en Catalogo.",
         )
+    update_catalog(catalog_item)
     return catalog_item
